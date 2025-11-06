@@ -1,0 +1,228 @@
+{
+  "world_name": "run2025",
+  "start_time": "2025-11-06T23:08:00.081746",
+  "alive_percent": 25.0,
+  "grid_size": {
+    "rows": 30,
+    "cols": 50
+  },
+  "steps": [
+    {
+      "generation": 0,
+      "timestamp": "2025-11-06T23:08:01.094108",
+      "alive_count": 392,
+      "dead_count": 1108
+    },
+    {
+      "generation": 1,
+      "timestamp": "2025-11-06T23:08:01.207086",
+      "alive_count": 461,
+      "dead_count": 1039
+    },
+    {
+      "generation": 2,
+      "timestamp": "2025-11-06T23:08:01.321932",
+      "alive_count": 402,
+      "dead_count": 1098
+    },
+    {
+      "generation": 3,
+      "timestamp": "2025-11-06T23:08:01.439791",
+      "alive_count": 411,
+      "dead_count": 1089
+    },
+    {
+      "generation": 4,
+      "timestamp": "2025-11-06T23:08:01.561192",
+      "alive_count": 387,
+      "dead_count": 1113
+    },
+    {
+      "generation": 5,
+      "timestamp": "2025-11-06T23:08:01.687655",
+      "alive_count": 393,
+      "dead_count": 1107
+    },
+    {
+      "generation": 6,
+      "timestamp": "2025-11-06T23:08:01.805576",
+      "alive_count": 367,
+      "dead_count": 1133
+    },
+    {
+      "generation": 7,
+      "timestamp": "2025-11-06T23:08:01.924242",
+      "alive_count": 354,
+      "dead_count": 1146
+    },
+    {
+      "generation": 8,
+      "timestamp": "2025-11-06T23:08:02.039948",
+      "alive_count": 328,
+      "dead_count": 1172
+    },
+    {
+      "generation": 9,
+      "timestamp": "2025-11-06T23:08:02.158329",
+      "alive_count": 294,
+      "dead_count": 1206
+    },
+    {
+      "generation": 10,
+      "timestamp": "2025-11-06T23:08:02.277415",
+      "alive_count": 308,
+      "dead_count": 1192
+    },
+    {
+      "generation": 11,
+      "timestamp": "2025-11-06T23:08:02.397870",
+      "alive_count": 296,
+      "dead_count": 1204
+    },
+    {
+      "generation": 12,
+      "timestamp": "2025-11-06T23:08:02.518751",
+      "alive_count": 304,
+      "dead_count": 1196
+    },
+    {
+      "generation": 13,
+      "timestamp": "2025-11-06T23:08:02.640514",
+      "alive_count": 314,
+      "dead_count": 1186
+    },
+    {
+      "generation": 14,
+      "timestamp": "2025-11-06T23:08:02.766989",
+      "alive_count": 313,
+      "dead_count": 1187
+    },
+    {
+      "generation": 15,
+      "timestamp": "2025-11-06T23:08:02.890101",
+      "alive_count": 288,
+      "dead_count": 1212
+    },
+    {
+      "generation": 16,
+      "timestamp": "2025-11-06T23:08:03.014022",
+      "alive_count": 256,
+      "dead_count": 1244
+    },
+    {
+      "generation": 17,
+      "timestamp": "2025-11-06T23:08:03.136537",
+      "alive_count": 208,
+      "dead_count": 1292
+    },
+    {
+      "generation": 18,
+      "timestamp": "2025-11-06T23:08:03.260618",
+      "alive_count": 222,
+      "dead_count": 1278
+    },
+    {
+      "generation": 19,
+      "timestamp": "2025-11-06T23:08:03.385356",
+      "alive_count": 210,
+      "dead_count": 1290
+    },
+    {
+      "generation": 20,
+      "timestamp": "2025-11-06T23:08:03.511241",
+      "alive_count": 220,
+      "dead_count": 1280
+    },
+    {
+      "generation": 21,
+      "timestamp": "2025-11-06T23:08:03.628838",
+      "alive_count": 215,
+      "dead_count": 1285
+    },
+    {
+      "generation": 22,
+      "timestamp": "2025-11-06T23:08:03.762360",
+      "alive_count": 219,
+      "dead_count": 1281
+    },
+    {
+      "generation": 23,
+      "timestamp": "2025-11-06T23:08:03.875322",
+      "alive_count": 242,
+      "dead_count": 1258
+    },
+    {
+      "generation": 24,
+      "timestamp": "2025-11-06T23:08:03.996120",
+      "alive_count": 230,
+      "dead_count": 1270
+    },
+    {
+      "generation": 25,
+      "timestamp": "2025-11-06T23:08:04.123721",
+      "alive_count": 236,
+      "dead_count": 1264
+    },
+    {
+      "generation": 26,
+      "timestamp": "2025-11-06T23:08:04.240351",
+      "alive_count": 240,
+      "dead_count": 1260
+    },
+    {
+      "generation": 27,
+      "timestamp": "2025-11-06T23:08:04.357630",
+      "alive_count": 224,
+      "dead_count": 1276
+    },
+    {
+      "generation": 28,
+      "timestamp": "2025-11-06T23:08:04.482760",
+      "alive_count": 229,
+      "dead_count": 1271
+    },
+    {
+      "generation": 29,
+      "timestamp": "2025-11-06T23:08:04.610328",
+      "alive_count": 248,
+      "dead_count": 1252
+    },
+    {
+      "generation": 30,
+      "timestamp": "2025-11-06T23:08:04.736921",
+      "alive_count": 244,
+      "dead_count": 1256
+    },
+    {
+      "generation": 31,
+      "timestamp": "2025-11-06T23:08:04.864266",
+      "alive_count": 246,
+      "dead_count": 1254
+    },
+    {
+      "generation": 32,
+      "timestamp": "2025-11-06T23:08:04.991303",
+      "alive_count": 238,
+      "dead_count": 1262
+    },
+    {
+      "generation": 33,
+      "timestamp": "2025-11-06T23:08:05.117735",
+      "alive_count": 242,
+      "dead_count": 1258
+    },
+    {
+      "generation": 34,
+      "timestamp": "2025-11-06T23:08:05.244957",
+      "alive_count": 226,
+      "dead_count": 1274
+    },
+    {
+      "generation": 35,
+      "timestamp": "2025-11-06T23:08:05.371379",
+      "alive_count": 206,
+      "dead_count": 1294
+    }
+  ],
+  "end_time": "2025-11-06T23:08:05.371397"
+}

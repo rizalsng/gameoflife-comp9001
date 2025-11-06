@@ -3,7 +3,6 @@ import random
 import os
 import sys
 import time
-import uuid
 import json
 from datetime import datetime
 
@@ -38,16 +37,40 @@ def step(grid):
                 new_grid[i][j] = (n == 3)
     return new_grid
 
-def init_logging(world_id, alive_percent):
+def _slugify_world_name(world_name):
+    """Return a filesystem-safe slug from the provided world name."""
+    safe = ''.join(c for c in world_name if c.isalnum() or c in ('-', '_', ' ')).strip()
+    safe = safe.replace(' ', '_')
+    return safe or "world"
+
+def _ensure_unique_slug(base_slug):
+    """Ensure the slug is unique among existing world log files by appending a numeric suffix."""
+    if not os.path.exists(LOG_DIR):
+        return base_slug
+    candidate = base_slug
+    idx = 2
+    while os.path.exists(os.path.join(LOG_DIR, f"world_{candidate}.json")):
+        # If already ends with _<number>, increment that number
+        parts = candidate.rsplit('_', 1)
+        if len(parts) == 2 and parts[1].isdigit():
+            candidate = f"{parts[0]}_{int(parts[1]) + 1}"
+        else:
+            candidate = f"{base_slug}_{idx}"
+            idx += 1
+    return candidate
+
+def init_logging(alive_percent, world_name=None):
     """Initialize log directory and log file for a new world."""
     if not os.path.exists(LOG_DIR):
         os.makedirs(LOG_DIR)
     
-    log_file = os.path.join(LOG_DIR, f"world_{world_id}.json")
+    base_slug = _slugify_world_name(world_name) if world_name else "world"
+    unique_slug = _ensure_unique_slug(base_slug)
+    log_file = os.path.join(LOG_DIR, f"world_{unique_slug}.json")
     
     # Initialize log file with world metadata
     log_data = {
-        "world_id": world_id,
+        "world_name": unique_slug,
         "start_time": datetime.now().isoformat(),
         "alive_percent": alive_percent,
         "grid_size": {"rows": ROWS, "cols": COLS},
@@ -85,13 +108,13 @@ def log_step(log_file, generation, alive_count, grid):
         # Silently handle logging errors to not interrupt the simulation
         pass
 
-def display(grid, generation, world_id=None):
+def display(grid, generation, world_name=None):
     """Print grid with title and alive count."""
     os.system('cls' if os.name == 'nt' else 'clear')
     alive_count = sum(cell for row in grid for cell in row)
     print("Conway Game of Life".center(COLS))
-    if world_id:
-        print(f"World ID: {world_id}".center(COLS))
+    if world_name:
+        print(f"World: {world_name}".center(COLS))
     print(f"Generation: {generation}".center(COLS))
     print("-" * COLS)
     for row in grid:
@@ -217,21 +240,34 @@ def plot_ascii_trend(alive_counts, width=60, height=15):
     
     return "\n".join(lines)
 
-def analyze_world(world_id):
+def analyze_world(world_name):
     """Analyze a world's log file and display statistics."""
-    log_file = os.path.join(LOG_DIR, f"world_{world_id}.json")
-    
+    slug = _slugify_world_name(world_name)
+    # Primary: new format world_<name>.json
+    log_file = os.path.join(LOG_DIR, f"world_{slug}.json")
     if not os.path.exists(log_file):
-        print(f"Error: World with ID '{world_id}' not found.")
-        print(f"Log file expected at: {log_file}")
-        return
+        # Legacy support: find newest file starting with world_<name>_
+        try:
+            matches = [
+                os.path.join(LOG_DIR, f)
+                for f in os.listdir(LOG_DIR)
+                if f.startswith(f"world_{slug}_") and f.endswith('.json')
+            ]
+        except FileNotFoundError:
+            matches = []
+        if not matches:
+            print(f"Error: World named '{world_name}' not found.")
+            print(f"Looked for: {log_file}")
+            return
+        matches.sort(key=lambda p: os.path.getmtime(p), reverse=True)
+        log_file = matches[0]
     
     try:
         with open(log_file, 'r') as f:
             log_data = json.load(f)
         
         # Extract data
-        world_id = log_data.get("world_id", "Unknown")
+        world_name = log_data.get("world_name", "Unknown")
         start_time = log_data.get("start_time", "Unknown")
         end_time = log_data.get("end_time", "Unknown")
         alive_percent = log_data.get("alive_percent", 0)
@@ -239,7 +275,7 @@ def analyze_world(world_id):
         steps = log_data.get("steps", [])
         
         if not steps:
-            print(f"World {world_id} has no recorded steps.")
+            print(f"World {world_name} has no recorded steps.")
             return
         
         # Calculate statistics
@@ -264,7 +300,7 @@ def analyze_world(world_id):
         print("=" * 60)
         print("WORLD ANALYSIS".center(60))
         print("=" * 60)
-        print(f"\nWorld ID: {world_id}")
+        print(f"\nWorld: {world_name}")
         print(f"Grid Size: {grid_size.get('rows', '?')} x {grid_size.get('cols', '?')}")
         print(f"Initial Alive Percentage: {alive_percent}%")
         print(f"\nStart Time: {start_time}")
@@ -324,42 +360,50 @@ def analyze_world(world_id):
 def main():
     if len(sys.argv) < 2:
         print("Usage:")
-        print("  Simulation: python game-of-life.py <alive_percent>")
-        print("  Analysis:   python game-of-life.py analyze <world_id>")
+        print("  Simulation: python game-of-life.py <world_name> <alive_percent>")
+        print("  Analysis:   python game-of-life.py analyze <world_name>")
         print("\nExamples:")
-        print("  python game-of-life.py 60")
-        print("  python game-of-life.py analyze a1b2c3d4-e5f6-7890-abcd-ef1234567890")
+        print("  python game-of-life.py Alice 60")
+        print("  python game-of-life.py analyze Alice")
         sys.exit(1)
 
     # Check if analyze command
     if sys.argv[1].lower() == "analyze":
         if len(sys.argv) < 3:
-            print("Error: World ID required for analyze command.")
-            print("Usage: python game-of-life.py analyze <world_id>")
+            print("Error: World name required for analyze command.")
+            print("Usage: python game-of-life.py analyze <world_name>")
             sys.exit(1)
-        world_id = sys.argv[2]
-        analyze_world(world_id)
+        world_name = sys.argv[2]
+        analyze_world(world_name)
         return
 
     # Simulation mode
-    # Generate unique world ID
-    world_id = str(uuid.uuid4())
-    
-    alive_percent = float(sys.argv[1])
+    if len(sys.argv) < 3:
+        print("Error: Missing arguments. Usage: python game-of-life.py <world_name> <alive_percent>")
+        sys.exit(1)
+
+    world_name = sys.argv[1]
+    try:
+        alive_percent = float(sys.argv[2])
+    except ValueError:
+        print("Error: <alive_percent> must be a number, e.g., 60")
+        sys.exit(1)
     alive_prob = alive_percent / 100.0
     grid = create_grid(alive_prob)
     generation = 0
     
     # Initialize logging
-    log_file = init_logging(world_id, alive_percent)
-    print(f"World started with ID: {world_id}")
+    log_file = init_logging(alive_percent, world_name)
+    # Read back the unique name chosen (from filename)
+    chosen_name = os.path.basename(log_file)[len("world_"):-len(".json")]
+    print(f"World started: {chosen_name}")
     print(f"Logging to: {log_file}")
     time.sleep(1)  # Brief pause to show world info
 
     try:
         while True:
             alive_count = sum(cell for row in grid for cell in row)
-            display(grid, generation, world_id)
+            display(grid, generation, chosen_name)
             log_step(log_file, generation, alive_count, grid)
             grid = step(grid)
             generation += 1
@@ -367,7 +411,7 @@ def main():
     except KeyboardInterrupt:
         print("\nGame stopped.")
         print(f"Log file saved: {log_file}")
-        print(f"To analyze this world, run: python game-of-life.py analyze {world_id}")
+        print(f"To analyze this world, run: python game-of-life.py analyze {chosen_name}")
 
 if __name__ == "__main__":
     main()
