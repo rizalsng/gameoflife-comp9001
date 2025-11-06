@@ -2,25 +2,31 @@
 
 A simple terminal implementation of Conway's Game of Life written in Python. It renders generations in the console using `x` for live cells and `-` for dead cells, with toroidal (wrap-around) edges.
 
+### Rules (Conway's Game of Life)
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="static/gameofliferules11.jpg" alt="Conway's Game of Life Rules" width="320" />
+    </td>
+    <td width="50%" valign="top">
+      <ul>
+        <li>A live cell with fewer than 2 live neighbors dies (underpopulation).</li>
+        <li>A live cell with 2 or 3 live neighbors lives on to the next generation.</li>
+        <li>A live cell with more than 3 live neighbors dies (overpopulation).</li>
+        <li>A dead cell with exactly 3 live neighbors becomes a live cell (reproduction).</li>
+      </ul>
+    </td>
+  </tr>
+  </table>
+
 ### Summary
 - **Grid size**: `30 x 50` (configurable via `ROWS` and `COLS` in `game-of-life.py`).
 - **Initialization**: Random population based on a user-provided alive percentage (e.g., `60` -> 60% chance a cell starts alive).
 - **Evolution rules**: Standard Conway rules with wrap-around neighbors.
-- **Display**: Clears terminal each frame, shows world ID, generation number and alive cell count, updates ~10 FPS (`time.sleep(0.1)`).
-- **Logging**: Each world (simulation run) generates a unique UUID and logs step-by-step data to JSON files in the `logs/` directory.
-- **Analysis**: Analyze any previously run world using its unique ID to view statistics and trends.
+- **Display**: Clears terminal each frame, shows world name, generation number and alive cell count, updates ~10 FPS (`time.sleep(0.1)`).
+- **Logging**: Each world (simulation run) logs step-by-step data to a JSON file in the `logs/` directory, named by the world (e.g., `world_Alice.json`). If a name already exists, a numeric suffix is added (e.g., `world_Alice_2.json`).
+- **Analysis**: Analyze any previously run world using its name to view statistics and trends.
 
-### How it works
-Key functions in `game-of-life.py`:
-- `create_grid(alive_prob)`: Builds the initial grid using the provided probability of a cell being alive.
-- `count_neighbors(grid, x, y)`: Counts the 8 neighbors using wrap-around indexing (toroidal board).
-- `step(grid)`: Applies Game of Life rules to produce the next generation.
-- `display(grid, generation, world_id)`: Clears the screen and prints the current grid with header, world ID, and stats.
-- `init_logging(world_id, alive_percent)`: Creates a log directory and initializes a JSON log file for the world.
-- `log_step(log_file, generation, alive_count, grid)`: Logs step data (generation, timestamp, alive/dead counts) to the log file.
-- `analyze_world(world_id)`: Reads a world's log file and displays comprehensive statistics and analysis.
-- `plot_ascii_trend(alive_counts, width, height)`: Creates an ASCII line plot visualization of the alive cell trend over generations.
-- `main()`: Handles two modes: simulation (generates unique world ID, runs simulation) or analysis (analyzes existing world by ID).
 
 ### Usage
 Requirements:
@@ -28,44 +34,58 @@ Requirements:
 
 #### Running a Simulation
 ```bash
-python3 game-of-life.py <alive_percent>
+python3 game-of-life.py <world_name> <alive_percent>
 # example
-python3 game-of-life.py 60
+python3 game-of-life.py Alice 60
 ```
 
 Controls:
 - Press `Ctrl+C` to stop the simulation.
 
 #### Analyzing a World
-After running a simulation, you'll receive a world ID. Use it to analyze the simulation:
+Analyze a simulation by its world name (the filename without `world_` and `.json`):
 
 ```bash
-python3 game-of-life.py analyze <world_id>
+python3 game-of-life.py analyze <world_name>
 # example
-python3 game-of-life.py analyze a1b2c3d4-e5f6-7890-abcd-ef1234567890
+python3 game-of-life.py analyze Alice
 ```
 
 The analyze command displays:
-- World metadata (ID, grid size, initial alive percentage)
+- World metadata (name, grid size, initial alive percentage)
 - Start/end times and duration
 - Total number of generations
 - Alive cell statistics (min, max, average, initial, final)
 - **ASCII-based line plot visualization** showing alive cells trend over all generations
 - Generation-by-generation trends (first 10 and last 10 generations)
 
-### Logging Feature
-Each simulation (called a "world") is assigned a unique UUID and logs step-by-step data to JSON files:
+### How it works
+ Key functions in `game-of-life.py`:
+- `create_grid(alive_prob)`: Builds the initial grid using the provided probability of a cell being alive.
+- `count_neighbors(grid, x, y)`: Counts the 8 neighbors using wrap-around indexing (toroidal board).
+- `step(grid)`: Applies Game of Life rules to produce the next generation.
+- `display(grid, generation, world_name)`: Clears the screen and prints the current grid with header (world name) and stats.
+- `init_logging(alive_percent, world_name)`: Creates a log directory and initializes a JSON log file named after the world.
+- `log_step(log_file, generation, alive_count, grid)`: Logs step data (generation, timestamp, alive/dead counts) to the log file.
+- `analyze_world(world_name)`: Reads a world's log file by name and displays comprehensive statistics and analysis.
+- `plot_ascii_trend(alive_counts, width, height)`: Creates an ASCII line plot visualization of the alive cell trend over generations.
+- `main()`: Handles two modes: simulation (runs a world with a provided name) or analysis (analyzes existing world by name).
 
-- **Log location**: `logs/world_<uuid>.json`
+
+
+### Logging Feature
+Each simulation (called a "world") logs step-by-step data to JSON:
+
+- **Log location**: `logs/world_<name>.json` (e.g., `logs/world_Alice.json`). If a log with the same name exists, a numeric suffix is added (e.g., `logs/world_Alice_2.json`).
 - **Log format**: JSON with world metadata and step-by-step data
 - **What's logged**: 
-  - World metadata: unique ID, start/end times, alive percentage, grid size
+  - World metadata: world name, start/end times, alive percentage, grid size
   - Per-step data: generation number, timestamp, alive cell count, dead cell count
 
 Example log file structure:
 ```json
 {
-  "world_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "world_name": "Alice",
   "start_time": "2024-01-15T10:30:45.123456",
   "alive_percent": 60.0,
   "grid_size": {"rows": 30, "cols": 50},
@@ -82,7 +102,7 @@ Example log file structure:
 }
 ```
 
-The log file is automatically created in the `logs/` directory (created if it doesn't exist) and updated after each generation step. When you stop a simulation (Ctrl+C), you'll be shown the world ID and the command to analyze it.
+The log file is automatically created in the `logs/` directory (created if it doesn't exist) and updated after each generation step. When you stop a simulation (Ctrl+C), you'll be shown the chosen world name and the command to analyze it.
 
 ### Configuration
 You can change these constants at the top of `game-of-life.py`:
@@ -91,22 +111,11 @@ You can change these constants at the top of `game-of-life.py`:
 - `time.sleep(0.1)`: Adjust frame delay for slower/faster animation.
 - Characters used for rendering are in `display(...)` (`'x'` for live, `'-'` for dead).
 
-### Game rules (Conway)
-- A live cell with fewer than 2 live neighbors dies (underpopulation).
-- A live cell with 2 or 3 live neighbors lives on to the next generation.
-- A live cell with more than 3 live neighbors dies (overpopulation).
-- A dead cell with exactly 3 live neighbors becomes a live cell (reproduction).
-
-### Notes and caveats
-- The grid uses wrap-around edges (top connects to bottom, left to right), so patterns may behave differently compared to bounded boards.
-- The docstring in `create_grid` mentions a `100x100` grid, but the actual default is `30x50`. This is cosmetic and does not affect behavior.
-- Log files are written to disk after each generation step, which may have a slight performance impact on very fast systems.
-- If logging fails (e.g., disk full, permission issues), the simulation continues without interruption.
 
 ### Example output (truncated)
 ```
                  Conway Game of Life                 
-     World ID: a1b2c3d4-e5f6-7890-abcd-ef1234567890        
+                   World: Alice                    
                     Generation: 12                   
 --------------------------------------------------
 x--x---x----x-----x--x----x---x-----x--x----x----x-
@@ -118,15 +127,15 @@ x--x---x----x-----x--x----x---x-----x--x----x----x-
 
 On start, you'll see:
 ```
-World started with ID: a1b2c3d4-e5f6-7890-abcd-ef1234567890
-Logging to: logs/world_a1b2c3d4-e5f6-7890-abcd-ef1234567890.json
+World started: Alice
+Logging to: logs/world_Alice.json
 ```
 
 When you stop (Ctrl+C), you'll see:
 ```
 Game stopped.
-Log file saved: logs/world_a1b2c3d4-e5f6-7890-abcd-ef1234567890.json
-To analyze this world, run: python game-of-life.py analyze a1b2c3d4-e5f6-7890-abcd-ef1234567890
+Log file saved: logs/world_Alice.json
+To analyze this world, run: python game-of-life.py analyze Alice
 ```
 
 ### Example Analysis Output
@@ -135,7 +144,7 @@ To analyze this world, run: python game-of-life.py analyze a1b2c3d4-e5f6-7890-ab
                         WORLD ANALYSIS                        
 ============================================================
 
-World ID: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+World: Alice
 Grid Size: 30 x 50
 Initial Alive Percentage: 60.0%
 
