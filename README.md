@@ -2,7 +2,12 @@
 
 A simple terminal implementation of Conway's Game of Life written in Python. It renders generations in the console using `x` for live cells and `-` for dead cells, with toroidal (wrap-around) edges.
 
+### Conway's Game of Life
+The Game of Life, also known as Conway's Game of Life or simply Life, is a cellular automaton devised by the British mathematician John Horton Conway in 1970. It is a zero-player game, meaning that its evolution is determined by its initial state, requiring no further input. One interacts with the Game of Life by creating an initial configuration and observing how it evolves. 
+
 ### Rules (Conway's Game of Life)
+The universe of the Game of Life is an infinite, two-dimensional orthogonal grid of square cells, each of which is in one of two possible states, live or dead (or populated and unpopulated, respectively). Every cell interacts with its eight neighbours, which are the cells that are horizontally, vertically, or diagonally adjacent. 
+
 <table>
   <tr>
     <td width="50%" valign="top">
@@ -20,7 +25,7 @@ A simple terminal implementation of Conway's Game of Life written in Python. It 
   </table>
 
 ### Summary
-- **Grid size**: `30 x 50` (configurable via `ROWS` and `COLS` in `game-of-life.py`).
+- **Grid size**: configurable via `ROWS` and `COLS` in `game-of-life.py`).
 - **Initialization**: Random population based on a user-provided alive percentage (e.g., `60` -> 60% chance a cell starts alive).
 - **Evolution rules**: Standard Conway rules with wrap-around neighbors.
 - **Display**: Clears terminal each frame, shows world name, generation number and alive cell count, updates ~10 FPS (`time.sleep(0.1)`).

@@ -6,7 +6,7 @@ import time
 import json
 from datetime import datetime
 
-ROWS, COLS = 30, 50
+ROWS, COLS = 50, 150
 LOG_DIR = "logs"
 
 def create_grid(alive_prob):
